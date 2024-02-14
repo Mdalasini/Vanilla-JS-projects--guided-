@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Speed Typing</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <section class="bg-blue-900 flex flex-col items-center justify-center h-screen font-sans text-2xl p-6 gap-y-7">
+            <div 
+            class="text-yellow-400"
+            id="score">
+            <span 
+            class="text-9xl"
+            id="timer">0</span>
+            </div>
+            <div 
+            class="max-w-3xl rounded-xl bg-yellow-400 h-fit py-10 px-6 text-left cursor-pointer"
+            id="playArea">
+                <div 
+                class="h-1/4 w-full p-6"
+                id="quoteDisplay">Quote</div>
+            </div>
+        </section>
+        
+        <script src="script.js" async defer></script>
+    </body>
+</html>
