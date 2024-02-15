@@ -24,16 +24,20 @@ function addDeleteFunctionality(closeIcon) {
         // get todo item
         var todoId = closeIcon.dataset.list
         var todoItem = document.getElementById(todoId)
-        // Remove todo item
-        todoItem.remove();
+        var todoIdNumber = parseInt(todoId.substring(4), 10)
+        // Remove todo item from HTML
+        todoItem.remove()
+        // Remove todo from LocalStorage
+        todoItems.removeValue(todoIdNumber)
+        saveListToLocalStorage(todoItems.getAllValues())
     })
 }
 
 // Fuction to create a todo item template
-function createTodoItemTemplate(index, text) {
+function createTodoItemTemplate(id, text) {
     var todoItem = document.createElement('div')
     todoItem.className = 'flex gap-x-4 items-center'
-    todoItem.id = 'todo' + index
+    todoItem.id = 'todo' + id
 
     var label = document.createElement('label')
     label.className = 'relative overflow-hidden'
@@ -41,7 +45,7 @@ function createTodoItemTemplate(index, text) {
     var checkbox = document.createElement('input')
     checkbox.className = 'checkbox__input'
     checkbox.type = 'checkbox'
-    checkbox.setAttribute('data-list', 'todo' + index + 'Text')
+    checkbox.setAttribute('data-list', 'todo' + id + 'Text')
 
     var checkboxInner = document.createElement('span')
     checkboxInner.className = 'checkbox__inner'
@@ -51,12 +55,12 @@ function createTodoItemTemplate(index, text) {
 
     var todoText = document.createElement('p')
     todoText.className = 'text-lg truncate font-light text-stone-900 inline-block flex-grow'
-    todoText.id = 'todo' + index + 'Text'
+    todoText.id = 'todo' + id + 'Text'
     todoText.textContent = text
 
     var closeIcon = document.createElement('span')
     closeIcon.className = 'material-symbols-outlined cursor-pointer'
-    closeIcon.setAttribute('data-list', 'todo' + index)
+    closeIcon.setAttribute('data-list', 'todo' + id)
     closeIcon.textContent = 'close'
 
     todoItem.appendChild(label)
@@ -70,28 +74,92 @@ function createTodoItemTemplate(index, text) {
 }
 
 // Function to populate the list with items
-function populateList(items) {
-    items.forEach((item, index) => {
-        var todoItem = createTodoItemTemplate(index + 1, item);
+function populateList(dict) {
+    dict.getAllKeyValuePairs().forEach((pair) => {
+        var id = pair.key
+        var value = pair.value
+        var todoItem = createTodoItemTemplate(id, value);
         listContainer.appendChild(todoItem)
     })
 }
 
 // Function to save todos to localstorage
-function saveListToLocalStorage(items) {
-    localStorage.setItem('todoItems', JSON.stringify(items));
+function saveListToLocalStorage(list) {
+    localStorage.setItem('todoItems', JSON.stringify(list));
 }
 
 // Function to retrive the todos from localStorage
 function getListFromLocalStorage() {
     var storedList = localStorage.getItem('todoItems')
-    return storedList ? JSON.parse(storedList) : []
+    var dictionary = createDictionary()
+    if (storedList) {
+        var list = JSON.parse(storedList)
+        for (const value of list){
+            dictionary.addValue(value)
+        }
+    }
+    return dictionary
 }
 
 // get items from localStorage
-const todoItems = getListFromLocalStorage();
+const todoItems = getListFromLocalStorage()
 
-// Populate list
+// Function to create a dict that stores the todoItems
+function createDictionary () {
+    const dictionary = {}
+    let nextId = 1
+
+    // Function to add a value to the dictionary with automatically generated ID
+    function addValue(value) {
+        const id = nextId++
+        dictionary[id] = value;
+        return id;
+    }
+
+    // Function to get the value from the dictionary based on the ID
+    function getValue(id) {
+        return dictionary[id];
+    }
+
+    // Funtion to remove a value from the dictionary based on the ID
+    function removeValue(id) {
+        if (dictionary.hasOwnProperty(id)) {
+            delete dictionary[id]
+            return true;
+        }
+        return false;
+    }
+
+    function getAllKeyValuePairs() {
+        const keyValuePairs = []
+        for (const key in dictionary) {
+            if (dictionary.hasOwnProperty(key)) {
+                keyValuePairs.push({key, value: dictionary[key]})
+            }
+        }
+        return keyValuePairs
+    }
+
+    function getAllValues() {
+        const values = []
+        for (const key in dictionary) {
+            if (dictionary.hasOwnProperty(key)){
+                values.push(dictionary[key])
+            }            
+        }
+        return values
+    }
+
+    return {
+        addValue,
+        getValue,
+        removeValue,
+        getAllKeyValuePairs,
+        getAllValues,
+    }
+}
+
+// Populate list on load
 populateList(todoItems)
 
 
@@ -103,13 +171,14 @@ addTodoForm.addEventListener('submit', (e) => {
 
     let newTodo = document.getElementById('newTodo')
 
-    if (newTodo.value != ""){
+    if (newTodo.value != ""){ // if newTodo not empty string
         // and new todo to list
-        todoItems.push(newTodo.value)
+        var id = todoItems.addValue(newTodo.value)
         // add item to list
-        var todoItem = createTodoItemTemplate(todoItems.length, newTodo.value);
+        var todoItem = createTodoItemTemplate(id, todoItems.getValue(id));
+        // Add to ui
         listContainer.appendChild(todoItem)
-        saveListToLocalStorage(todoItems)
+        saveListToLocalStorage(todoItems.getAllValues())
     }
     newTodo.value = ''
 })
