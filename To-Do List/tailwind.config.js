@@ -14,6 +14,9 @@ module.exports = {
       'xl': '1440px',
       // => @media (min-width: 1440px) { ... }
     },
+    fontFamily: {
+      inter: ['"Inter", sans']
+    },
     extend: {},
   },
   plugins: [],
